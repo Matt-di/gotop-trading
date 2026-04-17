@@ -24,19 +24,48 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ProjectPage({ params }: ProjectPageProps) {
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [resolvedId, setResolvedId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProject();
-  }, [params.id]);
+    let mounted = true;
+    const resolveParams = async () => {
+      const { id } = await params;
+      if (mounted) {
+        setResolvedId(id);
+        fetchProject(id);
+      }
+    };
+    resolveParams();
+    return () => {
+      mounted = false;
+    };
+  }, [params]);
+
+  const fetchProject = async (id: string) => {
+    try {
+      const response = await fetch(`/api/portfolio/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setProject(data);
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      setNotFound(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProject = async () => {
     try {
