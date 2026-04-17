@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   Code as Code2,
   Film,
@@ -40,7 +40,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { services, portfolioProjects, testimonials } from "@/lib/data";
+import { services } from "@/lib/data";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -51,7 +51,35 @@ const fadeInUp = {
 export default function ServicesPage() {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [portfolioProjects, setPortfolioProjects] = useState<any[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
   const heroRef = useRef(null);
+
+  useEffect(() => {
+    fetchPortfolioProjects();
+  }, []);
+
+  const fetchPortfolioProjects = async () => {
+    try {
+      const response = await fetch("/api/portfolio");
+      if (response.ok) {
+        const data = await response.json();
+        setPortfolioProjects(
+          data.map((project: any) => ({
+            ...project,
+            technologies:
+              typeof project.technologies === "string"
+                ? JSON.parse(project.technologies)
+                : project.technologies,
+          })),
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching portfolio projects:", error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -378,74 +406,97 @@ export default function ServicesPage() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {portfolioProjects.slice(0, 6).map((project, index) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="h-full hover:shadow-lg transition-all duration-300 border-2 border-navy-200 dark:border-navy-800 hover:border-amber-500 dark:hover:border-amber-400 bg-white dark:bg-navy-900/50 group cursor-pointer">
-                  <CardHeader className="pb-4">
-                    <div className="aspect-video bg-navy-50 dark:bg-navy-800 rounded-sm mb-4 flex items-center justify-center">
-                      <div className="text-4xl">
-                        {project.category === "software" && (
-                          <Code2 className="h-12 w-12 text-navy-300 dark:text-navy-600" />
-                        )}
-                        {project.category === "media" && (
-                          <Film className="h-12 w-12 text-navy-300 dark:text-navy-600" />
-                        )}
-                        {project.category === "printing" && (
-                          <Printer className="h-12 w-12 text-navy-300 dark:text-navy-600" />
+          {loadingProjects ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-navy-900 dark:border-navy-50 mx-auto"></div>
+              <p className="mt-4 text-navy-600 dark:text-navy-300">
+                Loading projects...
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {portfolioProjects.slice(0, 6).map((project, index) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 border-2 border-navy-200 dark:border-navy-800 hover:border-amber-500 dark:hover:border-amber-400 bg-white dark:bg-navy-900/50 group cursor-pointer">
+                    <CardHeader className="pb-4">
+                      <div className="aspect-video bg-navy-50 dark:bg-navy-800 rounded-sm mb-4 flex items-center justify-center overflow-hidden">
+                        {project.imageUrl ? (
+                          <img
+                            src={project.imageUrl}
+                            alt={project.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="text-4xl">
+                            {project.category === "software" && (
+                              <Code2 className="h-12 w-12 text-navy-300 dark:text-navy-600" />
+                            )}
+                            {project.category === "media" && (
+                              <Film className="h-12 w-12 text-navy-300 dark:text-navy-600" />
+                            )}
+                            {project.category === "printing" && (
+                              <Printer className="h-12 w-12 text-navy-300 dark:text-navy-600" />
+                            )}
+                          </div>
                         )}
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between mb-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {services.find((s) => s.id === project.category)?.title}
-                      </Badge>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {project.year}
-                      </span>
-                    </div>
-                    <CardTitle className="text-lg text-navy-900 dark:text-navy-50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                      {project.title}
-                    </CardTitle>
-                    <CardDescription className="text-sm text-navy-600 dark:text-navy-300">
-                      {project.client}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-sm text-navy-600 dark:text-navy-400 mb-4 line-clamp-3">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {project.technologies.slice(0, 3).map((tech) => (
-                        <span
-                          key={tech}
-                          className="text-xs bg-navy-100 dark:bg-navy-800 text-navy-700 dark:text-navy-300 px-2 py-1 rounded-sm"
-                        >
-                          {tech}
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {
+                            services.find((s) => s.id === project.category)
+                              ?.title
+                          }
+                        </Badge>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {project.year}
                         </span>
-                      ))}
-                    </div>
-                    <Link href={`/portfolio/${project.id}`}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full group/btn"
-                      >
-                        View Details
-                        <ExternalLink className="ml-1 h-3 w-3 group-hover/btn:translate-x-0.5 transition-transform" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                      </div>
+                      <CardTitle className="text-lg text-navy-900 dark:text-navy-50 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                        {project.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm text-navy-600 dark:text-navy-300">
+                        {project.client}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <p className="text-sm text-navy-600 dark:text-navy-400 mb-4 line-clamp-3">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mb-4">
+                        {Array.isArray(project.technologies) &&
+                          project.technologies
+                            .slice(0, 3)
+                            .map((tech: string) => (
+                              <span
+                                key={tech}
+                                className="text-xs bg-navy-100 dark:bg-navy-800 text-navy-700 dark:text-navy-300 px-2 py-1 rounded-sm"
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                      </div>
+                      <Link href={`/portfolio/${project.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full group/btn"
+                        >
+                          View Details
+                          <ExternalLink className="ml-1 h-3 w-3 group-hover/btn:translate-x-0.5 transition-transform" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-8">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
