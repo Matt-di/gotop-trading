@@ -137,20 +137,6 @@ export default function AdminLogin() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Demo Credentials:
-              </p>
-              <div className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                <p>
-                  <strong>Email:</strong> admin@gotop.et
-                </p>
-                <p>
-                  <strong>Password:</strong> admin123456
-                </p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
