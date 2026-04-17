@@ -256,7 +256,7 @@ function PortfolioForm({ initialData, onSubmit }: PortfolioFormProps) {
     category: initialData?.category || "",
     description: initialData?.description || "",
     technologies: Array.isArray(initialData?.technologies)
-      ? initialData.technologies.join(", ")
+      ? initialData?.technologies?.join(", ") || ""
       : "",
     imageUrl: initialData?.imageUrl || "",
     year: initialData?.year || new Date().getFullYear().toString(),

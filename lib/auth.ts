@@ -1,10 +1,10 @@
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { NextRequest } from 'next/server';
-import { prisma } from './prisma';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { NextRequest } from "next/server";
+import { prisma } from "./prisma";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_EXPIRES_IN = '7d';
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_EXPIRES_IN = "7d";
 
 export interface JWTPayload {
   userId: string;
@@ -17,7 +17,10 @@ export class AuthService {
     return bcrypt.hash(password, 12);
   }
 
-  static async verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  static async verifyPassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
   }
 
@@ -51,12 +54,12 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new Error('Invalid credentials');
+      throw new Error("Invalid credentials");
     }
 
     const isValidPassword = await this.verifyPassword(password, user.password);
     if (!isValidPassword) {
-      throw new Error('Invalid credentials');
+      throw new Error("Invalid credentials");
     }
 
     // Update last login
@@ -86,21 +89,21 @@ export class AuthService {
 
 // Middleware function for protecting admin routes
 export async function authMiddleware(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
+  const authHeader = request.headers.get("authorization");
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new Error('Unauthorized: No token provided');
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    throw new Error("Unauthorized: No token provided");
   }
 
   const token = authHeader.substring(7);
   const user = await AuthService.getUserFromToken(token);
 
   if (!user) {
-    throw new Error('Unauthorized: Invalid token');
+    throw new Error("Unauthorized: Invalid token");
   }
 
-  if (user.role !== 'admin') {
-    throw new Error('Forbidden: Admin access required');
+  if (user.role !== "ADMIN") {
+    throw new Error("Forbidden: Admin access required");
   }
 
   return user;

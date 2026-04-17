@@ -67,23 +67,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     }
   };
 
-  const fetchProject = async () => {
-    try {
-      const response = await fetch(`/api/portfolio/${params.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setProject(data);
-      } else {
-        setNotFound(true);
-      }
-    } catch (error) {
-      console.error("Error fetching project:", error);
-      setNotFound(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

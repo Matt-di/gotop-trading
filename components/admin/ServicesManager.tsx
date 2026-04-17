@@ -1,15 +1,28 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Plus, Edit, Trash2, Save, X } from "lucide-react";
 
 interface Service {
   id: string;
@@ -37,16 +50,16 @@ export function ServicesManager() {
 
   const fetchServices = async () => {
     try {
-      const response = await fetch('/api/admin/services');
+      const response = await fetch("/api/admin/services");
 
       if (response.ok) {
         const data = await response.json();
         setServices(data);
       } else {
-        console.error('Failed to fetch services');
+        console.error("Failed to fetch services");
       }
     } catch (error) {
-      console.error('Error fetching services:', error);
+      console.error("Error fetching services:", error);
     } finally {
       setLoading(false);
     }
@@ -54,8 +67,8 @@ export function ServicesManager() {
 
   const handleCreateService = async (serviceData: Partial<Service>) => {
     try {
-      const response = await fetch('/api/admin/services', {
-        method: 'POST',
+      const response = await fetch("/api/admin/services", {
+        method: "POST",
       });
 
       if (response.ok) {
@@ -63,14 +76,17 @@ export function ServicesManager() {
         setIsDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error creating service:', error);
+      console.error("Error creating service:", error);
     }
   };
 
-  const handleUpdateService = async (id: string, serviceData: Partial<Service>) => {
+  const handleUpdateService = async (
+    id: string,
+    serviceData: Partial<Service>,
+  ) => {
     try {
       const response = await fetch(`/api/admin/services/${id}`, {
-        method: 'PUT',
+        method: "PUT",
       });
 
       if (response.ok) {
@@ -78,23 +94,23 @@ export function ServicesManager() {
         setEditingService(null);
       }
     } catch (error) {
-      console.error('Error updating service:', error);
+      console.error("Error updating service:", error);
     }
   };
 
   const handleDeleteService = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this service?')) return;
+    if (!confirm("Are you sure you want to delete this service?")) return;
 
     try {
       const response = await fetch(`/api/admin/services/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
         fetchServices();
       }
     } catch (error) {
-      console.error('Error deleting service:', error);
+      console.error("Error deleting service:", error);
     }
   };
 
@@ -131,7 +147,7 @@ export function ServicesManager() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Badge variant={service.isActive ? "default" : "secondary"}>
-                  {service.isActive ? 'Active' : 'Inactive'}
+                  {service.isActive ? "Active" : "Inactive"}
                 </Badge>
                 <div className="flex space-x-2">
                   <Button
@@ -159,8 +175,12 @@ export function ServicesManager() {
                 {service.fullDescription}
               </p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">{service.features?.length || 0} features</Badge>
-                <Badge variant="outline">{service.technologies?.length || 0} technologies</Badge>
+                <Badge variant="outline">
+                  {service.features?.length || 0} features
+                </Badge>
+                <Badge variant="outline">
+                  {service.technologies?.length || 0} technologies
+                </Badge>
               </div>
             </CardContent>
           </Card>
@@ -169,7 +189,10 @@ export function ServicesManager() {
 
       {/* Edit Dialog */}
       {editingService && (
-        <Dialog open={!!editingService} onOpenChange={() => setEditingService(null)}>
+        <Dialog
+          open={!!editingService}
+          onOpenChange={() => setEditingService(null)}
+        >
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Edit Service</DialogTitle>
@@ -195,12 +218,16 @@ interface ServiceFormProps {
 
 function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    icon: initialData?.icon || '',
-    shortDescription: initialData?.shortDescription || '',
-    fullDescription: initialData?.fullDescription || '',
-    features: Array.isArray(initialData?.features) ? initialData.features.join(', ') : '',
-    technologies: Array.isArray(initialData?.technologies) ? initialData.technologies.join(', ') : '',
+    name: initialData?.name || "",
+    icon: initialData?.icon || "",
+    shortDescription: initialData?.shortDescription || "",
+    fullDescription: initialData?.fullDescription || "",
+    features: Array.isArray(initialData?.features)
+      ? initialData?.features?.join(", ") || ""
+      : "",
+    technologies: Array.isArray(initialData?.technologies)
+      ? initialData?.technologies?.join(", ") || ""
+      : "",
     isActive: initialData?.isActive ?? true,
   });
 
@@ -209,8 +236,14 @@ function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
 
     const serviceData = {
       ...formData,
-      features: formData.features.split(',').map(f => f.trim()).filter(Boolean),
-      technologies: formData.technologies.split(',').map(t => t.trim()).filter(Boolean),
+      features: formData.features
+        .split(",")
+        .map((f) => f.trim())
+        .filter(Boolean),
+      technologies: formData.technologies
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean),
     };
 
     onSubmit(serviceData);
@@ -245,7 +278,9 @@ function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
         <Input
           id="shortDescription"
           value={formData.shortDescription}
-          onChange={(e) => setFormData({ ...formData, shortDescription: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, shortDescription: e.target.value })
+          }
           required
         />
       </div>
@@ -255,7 +290,9 @@ function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
         <Textarea
           id="fullDescription"
           value={formData.fullDescription}
-          onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, fullDescription: e.target.value })
+          }
           rows={3}
           required
         />
@@ -267,7 +304,9 @@ function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
           <Input
             id="features"
             value={formData.features}
-            onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, features: e.target.value })
+            }
             placeholder="Feature 1, Feature 2, Feature 3"
           />
         </div>
@@ -276,7 +315,9 @@ function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
           <Input
             id="technologies"
             value={formData.technologies}
-            onChange={(e) => setFormData({ ...formData, technologies: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, technologies: e.target.value })
+            }
             placeholder="React, Node.js, PostgreSQL"
           />
         </div>
@@ -286,7 +327,9 @@ function ServiceForm({ initialData, onSubmit }: ServiceFormProps) {
         <Switch
           id="isActive"
           checked={formData.isActive}
-          onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+          onCheckedChange={(checked) =>
+            setFormData({ ...formData, isActive: checked })
+          }
         />
         <Label htmlFor="isActive">Active</Label>
       </div>
