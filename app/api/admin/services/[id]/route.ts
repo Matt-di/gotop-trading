@@ -1,72 +1,72 @@
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const service = await prisma.service.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!service) {
-      return NextResponse.json(
-        { error: 'Service not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Service not found" }, { status: 404 });
     }
 
     return NextResponse.json(service);
   } catch (error) {
-    console.error('Error fetching service:', error);
+    console.error("Error fetching service:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch service' },
-      { status: 500 }
+      { error: "Failed to fetch service" },
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     // For demo purposes, update the service with sample data
     // In production, you'd use request body parsing with proper validation
     const service = await prisma.service.update({
-      where: { id: params.id },
+      where: { id },
       data: {
-        name: 'Updated Service Name',
+        name: "Updated Service Name",
         updatedAt: new Date(),
       },
     });
 
     return NextResponse.json(service);
   } catch (error) {
-    console.error('Error updating service:', error);
+    console.error("Error updating service:", error);
     return NextResponse.json(
-      { error: 'Failed to update service' },
-      { status: 500 }
+      { error: "Failed to update service" },
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     await prisma.service.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
-    return NextResponse.json({ message: 'Service deleted successfully' });
+    return NextResponse.json({ message: "Service deleted successfully" });
   } catch (error) {
-    console.error('Error deleting service:', error);
+    console.error("Error deleting service:", error);
     return NextResponse.json(
-      { error: 'Failed to delete service' },
-      { status: 500 }
+      { error: "Failed to delete service" },
+      { status: 500 },
     );
   }
 }
