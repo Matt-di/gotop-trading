@@ -1,0 +1,194 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Users & Authentication
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  name      String?
+  password  String
+  role      Role      @default(ADMIN)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastLogin DateTime?
+
+  // Relations
+  blogPosts BlogPost[]
+  sessions  Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Content Management
+model Service {
+  id               String   @id @default(cuid())
+  name             String
+  icon             String?
+  shortDescription String
+  fullDescription  String
+  features         String // JSON array
+  technologies     String? // JSON array
+  processSteps     String? // JSON array
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("services")
+}
+
+model PortfolioProject {
+  id           String      @id @default(cuid())
+  title        String
+  client       String
+  category     String
+  description  String
+  technologies String // JSON array
+  imageUrl     String?
+  mediaAssetId String?
+  mediaAsset   MediaAsset? @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+  year         String
+  isFeatured   Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("portfolio_projects")
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  name        String
+  logoUrl     String?
+  description String?
+  isFeatured  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("clients")
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  name       String
+  role       String
+  company    String?
+  content    String
+  rating     Int
+  imageUrl   String?
+  isFeatured Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("testimonials")
+}
+
+model BlogPost {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  excerpt       String
+  content       String
+  authorId      String
+  category      String
+  tags          String // JSON array
+  featuredImage String?
+  readTime      String?
+  isFeatured    Boolean  @default(false)
+  publishedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  author User @relation(fields: [authorId], references: [id])
+
+  @@map("blog_posts")
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blog_categories")
+}
+
+// Contact & Analytics
+model ContactSubmission {
+  id              String   @id @default(cuid())
+  name            String
+  email           String
+  subject         String?
+  message         String
+  serviceInterest String?
+  ipAddress       String?
+  userAgent       String?
+  isRead          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@map("contact_submissions")
+}
+
+model NewsletterSubscription {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  subscribedAt     DateTime @default(now())
+  isActive         Boolean  @default(true)
+  unsubscribeToken String   @unique @default(cuid())
+
+  @@map("newsletter_subscriptions")
+}
+
+// System
+model MediaAsset {
+  id                String             @id @default(cuid())
+  filename          String
+  originalName      String
+  path              String
+  mimeType          String
+  size              Int
+  altText           String?
+  createdAt         DateTime           @default(now())
+  portfolioProjects PortfolioProject[]
+
+  @@map("media_assets")
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  action       String
+  resourceType String
+  resourceId   String?
+  oldValues    String? // JSON
+  newValues    String? // JSON
+  createdAt    DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
