@@ -463,7 +463,7 @@ export default function TermsOfServicePage() {
                       <br />
                       Email: legal@gotop.et
                       <br />
-                      Phone: +251 11 123 4567
+                      Phone: ++251911879421
                       <br />
                       Address: Addis Ababa, Ethiopia
                     </p>

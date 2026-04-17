@@ -751,7 +751,7 @@ export default function Home() {
             >
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4" />
-                <span>+251 11 123 4567</span>
+                <span>++251911879421</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />

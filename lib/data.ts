@@ -500,7 +500,7 @@ export const companyInfo = {
   about:
     "GoTop Trading PLC is a multi-faceted company specializing in software development, media production and dubbing, and professional printing services. With years of experience serving prestigious clients across government agencies, media organizations, and private enterprises, we have established ourselves as a trusted partner for comprehensive business solutions. Our team of skilled professionals combines technical expertise with creative excellence to deliver outstanding results that drive our clients' success.",
   email: "info@gotop.et",
-  phone: "+251 11 123 4567",
+  phone: "++251911879421",
   address: "Addis Ababa, Ethiopia",
   founded: "2018",
 };
