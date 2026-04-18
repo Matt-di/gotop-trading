@@ -336,7 +336,7 @@ export default function PrivacyPolicyPage() {
                       <br />
                       Email: privacy@gotop.et
                       <br />
-                      Phone: ++251911879421
+                      Phone: +251911879421
                       <br />
                       Address: Addis Ababa, Ethiopia
                     </p>

@@ -129,7 +129,7 @@ export default function RootLayout({
               logo: "https://gotop.et/logo.png",
               description:
                 "Leading provider of software development, media production and dubbing, and professional printing services in Ethiopia.",
-              foundingDate: "2018",
+              foundingDate: "2015",
               address: {
                 "@type": "PostalAddress",
                 addressCountry: "ET",
