@@ -339,10 +339,6 @@ export default function Home() {
               className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-navy-500 dark:text-navy-400"
             >
               <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                <span>ISO Certified</span>
-              </div>
-              <div className="flex items-center gap-2">
                 <Award className="h-4 w-4" />
                 <span>Award Winning</span>
               </div>
