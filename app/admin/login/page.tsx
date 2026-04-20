@@ -34,26 +34,23 @@ export default function AdminLogin() {
     setLoading(true);
     setError("");
 
-    // For demo purposes, check against hardcoded credentials
-    if (email === "admin@gotop.et" && password === "admin123456") {
-      try {
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
-        });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (response.ok) {
-          localStorage.setItem("adminToken", data.token);
-          router.push("/admin");
-        } else {
-          setError(data.message || "Login failed");
-        }
-      } catch (error) {
-        setError("An error occurred during login");
+      if (response.ok) {
+        localStorage.setItem("adminToken", data.token);
+        router.push("/admin");
+      } else {
+        setError(data.message || "Login failed");
       }
-    } else {
-      setError("Invalid credentials. Use the demo credentials provided.");
+    } catch (error) {
+      setError("An error occurred during login");
     }
 
     setLoading(false);

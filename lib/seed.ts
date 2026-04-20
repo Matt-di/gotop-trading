@@ -1,4 +1,5 @@
 import { prisma } from "./prisma";
+import { AuthService } from "./auth";
 import {
   clients,
   services,
@@ -11,12 +12,24 @@ import {
 async function main() {
   console.log("🌱 Starting database seeding...");
 
+  // Clear existing data (in reverse order of dependencies)
+  console.log("🧹 Clearing existing data...");
+  await prisma.blogPost.deleteMany();
+  await prisma.blogCategory.deleteMany();
+  await prisma.testimonial.deleteMany();
+  await prisma.portfolioProject.deleteMany();
+  await prisma.client.deleteMany();
+  await prisma.service.deleteMany();
+  await prisma.user.deleteMany();
+  console.log("✅ Database cleared");
+
   // Create admin user
   try {
+    const hashedPassword = await AuthService.hashPassword("admin123456");
     const adminUser = await prisma.user.create({
       data: {
         email: "admin@gotop.et",
-        password: "admin123456",
+        password: hashedPassword,
         name: "Admin User",
         role: "ADMIN",
       },

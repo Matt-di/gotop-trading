@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 import { AuthService } from "@/lib/auth";
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    // For demo purposes, we'll use hardcoded credentials
-    // In production, you'd use request body parsing with proper validation
-    const email = "admin@gotop.et";
-    const password = "admin123456";
+    const body = await request.json();
+    const { email, password } = body;
+
+    // Validation
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: "Email and password are required" },
+        { status: 400 },
+      );
+    }
 
     const { user, token } = await AuthService.authenticateUser(email, password);
 
